@@ -25,8 +25,8 @@ Edit the passwords in `public/index.html`:
 
 ```javascript
 const CONFIG = {
-  CREATOR_PASSWORD: 'admin123',     // Password for event creators
-  USER_PASSWORD: 'team2024',        // Password shared with team members
+  CREATOR_PASSWORD: 'a*******',     // Password for event creators
+  USER_PASSWORD: 't**********',        // Password shared with team members
 };
 ```
 
