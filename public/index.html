@@ -3,85 +3,980 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <title>Sports Roster Manager</title>
 
-    <!-- update the version number as needed -->
+    <!-- Firebase SDK -->
     <script defer src="/__/firebase/12.13.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.13.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.13.0/firebase-database-compat.js"></script>
     <script defer src="/__/firebase/12.13.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.13.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.13.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.13.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.13.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.13.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.13.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+    <style>
+      * { box-sizing: border-box; }
+      body { 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        color: #333; 
+        font-family: 'Segoe UI', Roboto, sans-serif; 
+        margin: 0; 
+        padding: 20px;
+        min-height: 100vh;
+      }
+      .container { 
+        background: white; 
+        max-width: 500px; 
+        margin: 0 auto; 
+        padding: 30px; 
+        border-radius: 16px; 
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      }
+      h1 { 
+        color: #667eea; 
+        margin: 0 0 24px; 
+        font-size: 24px;
+        text-align: center;
+      }
+      h2 {
+        color: #444;
+        font-size: 18px;
+        margin: 0 0 16px;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 8px;
+      }
+      .page { display: none; }
+      .page.active { display: block; }
+      
+      /* Form Styles */
+      .form-group { margin-bottom: 20px; }
+      label { 
+        display: block; 
+        margin-bottom: 6px; 
+        font-weight: 600;
+        color: #555;
+      }
+      input, select { 
+        width: 100%; 
+        padding: 12px; 
+        border: 2px solid #e0e0e0; 
+        border-radius: 8px; 
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+      input:focus, select:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      .time-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .time-row input, .time-row select {
+        flex: 1;
+      }
+      .time-row span {
+        font-weight: 600;
+        color: #666;
+      }
+      
+      /* Button Styles */
+      .btn { 
+        display: block;
+        width: 100%;
+        padding: 14px; 
+        border: none; 
+        border-radius: 8px; 
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 10px;
+      }
+      .btn-primary { 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        color: white;
+      }
+      .btn-primary:hover { 
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #666;
+      }
+      .btn-secondary:hover {
+        background: #e0e0e0;
+      }
+      .btn-success {
+        background: #28a745;
+        color: white;
+      }
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+        padding: 8px 16px;
+        width: auto;
+      }
+      .btn-whatsapp {
+        background: #25D366;
+        color: white;
+      }
+      .btn-small {
+        padding: 8px 16px;
+        width: auto;
+        display: inline-block;
+      }
+      
+      /* Landing Page */
+      .landing-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+      }
+      
+      /* Courts */
+      .courts-container { margin-bottom: 16px; }
+      .court-input {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .court-input input { flex: 1; }
+      .court-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #e8eaf6;
+        padding: 6px 12px;
+        border-radius: 20px;
+        margin: 4px;
+        font-size: 14px;
+      }
+      .court-tag button {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        margin-left: 8px;
+        font-size: 16px;
+      }
+      .court-tag button:hover { color: #dc3545; }
+      
+      /* Roster List */
+      .roster-list { 
+        list-style: none; 
+        padding: 0; 
+        margin: 0 0 20px;
+      }
+      .roster-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+      .roster-item .number {
+        width: 28px;
+        height: 28px;
+        background: #667eea;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        margin-right: 12px;
+      }
+      .roster-item .name {
+        flex: 1;
+        font-size: 16px;
+      }
+      .roster-item .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .roster-item button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 4px;
+      }
+      .roster-item .edit-btn { color: #667eea; }
+      .roster-item .delete-btn { color: #dc3545; }
+      
+      /* Event Info */
+      .event-info {
+        background: #f8f9fa;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .event-info p {
+        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .event-info .label {
+        font-weight: 600;
+        min-width: 80px;
+      }
+      .event-info .slots {
+        font-size: 18px;
+        font-weight: bold;
+        color: #28a745;
+      }
+      .event-info .slots.full {
+        color: #dc3545;
+      }
+      
+      /* Link Box */
+      .link-box {
+        background: #e8f5e9;
+        border: 2px solid #4caf50;
+        padding: 16px;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+      .link-box input {
+        background: white;
+        margin-bottom: 10px;
+      }
+      .link-actions {
+        display: flex;
+        gap: 10px;
+      }
+      
+      /* Messages */
+      .error {
+        background: #ffebee;
+        color: #c62828;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        display: none;
+      }
+      .success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        display: none;
+      }
+      
+      /* Loading */
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+      
+      /* Modal */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.active {
+        display: flex;
+      }
+      .modal {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        max-width: 400px;
+        width: 90%;
+      }
+      .modal h3 {
+        margin: 0 0 16px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .modal-actions .btn {
+        flex: 1;
+      }
+
+      /* Back link */
+      .back-link {
+        display: inline-block;
+        color: #667eea;
+        text-decoration: none;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .back-link:hover {
+        text-decoration: underline;
       }
     </style>
   </head>
   <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <div class="container">
+      <!-- Landing Page -->
+      <div id="landing-page" class="page active">
+        <h1>🎾 Sports Roster Manager</h1>
+        <p style="text-align: center; color: #666;">Organize your sports events and manage team rosters with ease.</p>
+        <div class="landing-options">
+          <button class="btn btn-primary" onclick="showPage('creator-auth')">
+            📋 Create New Event
+          </button>
+          <button class="btn btn-secondary" onclick="showPage('user-auth')">
+            ✋ Join Event as Player
+          </button>
+        </div>
+      </div>
+
+      <!-- Creator Authentication -->
+      <div id="creator-auth" class="page">
+        <a href="#" class="back-link" onclick="showPage('landing-page')">← Back</a>
+        <h1>🔐 Creator Login</h1>
+        <div id="creator-auth-error" class="error"></div>
+        <div class="form-group">
+          <label>Creator Password</label>
+          <input type="password" id="creator-password" placeholder="Enter creator password">
+        </div>
+        <button class="btn btn-primary" onclick="authenticateCreator()">Login</button>
+      </div>
+
+      <!-- Create Event Page -->
+      <div id="create-event" class="page">
+        <a href="#" class="back-link" onclick="showPage('landing-page')">← Back</a>
+        <h1>📋 Create Event</h1>
+        <div id="create-event-error" class="error"></div>
+        <div id="create-event-success" class="success"></div>
+        
+        <h2>📅 Date & Time</h2>
+        <div class="form-group">
+          <label>Event Date</label>
+          <input type="date" id="event-date">
+        </div>
+        <div class="form-group">
+          <label>Time Period</label>
+          <div class="time-row">
+            <input type="time" id="from-time" value="18:00">
+            <span>to</span>
+            <input type="time" id="to-time" value="20:00">
+          </div>
+        </div>
+        
+        <h2>🏸 Court Information</h2>
+        <div class="courts-container">
+          <div class="court-input">
+            <input type="text" id="court-input" placeholder="Enter court name (e.g., Court 1)">
+            <button class="btn btn-primary btn-small" onclick="addCourt()">Add</button>
+          </div>
+          <div id="courts-list"></div>
+        </div>
+        
+        <h2>👥 Number of Players</h2>
+        <div class="form-group">
+          <label>Max Players</label>
+          <select id="max-players">
+            <option value="4">4 Players</option>
+            <option value="6">6 Players</option>
+            <option value="8" selected>8 Players</option>
+            <option value="10">10 Players</option>
+            <option value="12">12 Players</option>
+            <option value="16">16 Players</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" onclick="createNewEvent()">Create Event</button>
+        
+        <div id="event-link-box" class="link-box" style="display: none;">
+          <label>🔗 Share this link with your team:</label>
+          <input type="text" id="event-link" readonly>
+          <div class="link-actions">
+            <button class="btn btn-primary btn-small" onclick="copyEventLink()">📋 Copy Link</button>
+            <button class="btn btn-whatsapp btn-small" onclick="shareToWhatsApp()">📱 Share to WhatsApp</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Authentication (Join Event) -->
+      <div id="user-auth" class="page">
+        <a href="#" class="back-link" onclick="showPage('landing-page')">← Back</a>
+        <h1>🔐 Player Login</h1>
+        <div id="user-auth-error" class="error"></div>
+        <div class="form-group">
+          <label>Event ID</label>
+          <input type="text" id="event-id-input" placeholder="Enter event ID">
+        </div>
+        <div class="form-group">
+          <label>Team Password</label>
+          <input type="password" id="user-password" placeholder="Enter team password">
+        </div>
+        <button class="btn btn-primary" onclick="authenticateUser()">Join Event</button>
+      </div>
+
+      <!-- Roster Page -->
+      <div id="roster-page" class="page">
+        <a href="#" class="back-link" onclick="showPage('landing-page')">← Back</a>
+        <h1>📝 Event Roster</h1>
+        <div id="roster-error" class="error"></div>
+        <div id="roster-success" class="success"></div>
+        
+        <div class="event-info">
+          <p><span class="label">📅 Date:</span> <span id="roster-date"></span></p>
+          <p><span class="label">⏰ Time:</span> <span id="roster-time"></span></p>
+          <p><span class="label">🏸 Courts:</span> <span id="roster-courts"></span></p>
+          <p><span class="label">👥 Slots:</span> <span id="roster-slots" class="slots"></span></p>
+        </div>
+        
+        <h2>Current Roster</h2>
+        <ul id="roster-list" class="roster-list"></ul>
+        
+        <div class="form-group">
+          <label>Add Your Name</label>
+          <div class="court-input">
+            <input type="text" id="player-name" placeholder="Enter your name">
+            <button class="btn btn-success btn-small" onclick="addPlayer()">Join</button>
+          </div>
+        </div>
+        
+        <button class="btn btn-whatsapp" onclick="notifyWhatsApp()">
+          📱 Share Roster to WhatsApp
+        </button>
+      </div>
+
+      <!-- Loading Page -->
+      <div id="loading-page" class="page">
+        <div class="loading">Loading...</div>
+      </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-overlay">
+      <div class="modal">
+        <h3>✏️ Edit Name</h3>
+        <div class="form-group">
+          <input type="text" id="edit-name-input" placeholder="Enter new name">
+          <input type="hidden" id="edit-player-id">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveEditedName()">Save</button>
+        </div>
+      </div>
+    </div>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      // Configuration - CHANGE THESE PASSWORDS!
+      const CONFIG = {
+        CREATOR_PASSWORD: 'admin123',     // Password for event creators
+        USER_PASSWORD: 'team2024',         // Password shared with team members
+        // Webhook URL for automatic notifications (Make.com)
+        WEBHOOK_URL: 'https://hook.us2.make.com/4qxpwf2pupiammejb8m2t58vqpyo4cgv'
+      };
 
+      // State
+      let db = null;
+      let currentEventId = null;
+      let courts = [];
+      let unsubscribeRoster = null;
+
+      // Initialize Firebase - wait for Firebase to be ready
+      function initFirebase() {
+        if (typeof firebase !== 'undefined' && firebase.firestore) {
+          try {
+            db = firebase.firestore();
+            console.log('Firebase initialized successfully');
+            checkUrlForEvent();
+          } catch (e) {
+            console.error('Firebase init error:', e);
+          }
+        } else {
+          // Firebase not ready yet, try again in 100ms
+          setTimeout(initFirebase, 100);
+        }
+      }
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        initFirebase();
+      });
+
+      // Check URL for event parameter
+      function checkUrlForEvent() {
+        const params = new URLSearchParams(window.location.search);
+        const eventId = params.get('event');
+        if (eventId) {
+          document.getElementById('event-id-input').value = eventId;
+          showPage('user-auth');
+        }
+      }
+
+      // Page Navigation
+      function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        
+        // Cleanup listener when leaving roster page
+        if (pageId !== 'roster-page' && unsubscribeRoster) {
+          unsubscribeRoster();
+          unsubscribeRoster = null;
+        }
+      }
+
+      // Creator Authentication
+      function authenticateCreator() {
+        const password = document.getElementById('creator-password').value;
+        const errorEl = document.getElementById('creator-auth-error');
+        
+        if (password === CONFIG.CREATOR_PASSWORD) {
+          errorEl.style.display = 'none';
+          document.getElementById('creator-password').value = '';
+          // Set default date to today
+          document.getElementById('event-date').valueAsDate = new Date();
+          showPage('create-event');
+        } else {
+          errorEl.textContent = 'Incorrect password. Please try again.';
+          errorEl.style.display = 'block';
+        }
+      }
+
+      // User Authentication
+      async function authenticateUser() {
+        const eventId = document.getElementById('event-id-input').value.trim();
+        const password = document.getElementById('user-password').value;
+        const errorEl = document.getElementById('user-auth-error');
+        
+        if (!eventId) {
+          errorEl.textContent = 'Please enter the event ID.';
+          errorEl.style.display = 'block';
+          return;
+        }
+        
+        if (password !== CONFIG.USER_PASSWORD) {
+          errorEl.textContent = 'Incorrect team password. Please try again.';
+          errorEl.style.display = 'block';
+          return;
+        }
+        
         try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+          showPage('loading-page');
+          const eventDoc = await db.collection('events').doc(eventId).get();
+          
+          if (!eventDoc.exists) {
+            showPage('user-auth');
+            errorEl.textContent = 'Event not found. Please check the event ID.';
+            errorEl.style.display = 'block';
+            return;
+          }
+          
+          currentEventId = eventId;
+          errorEl.style.display = 'none';
+          document.getElementById('user-password').value = '';
+          loadRosterPage(eventDoc.data());
         } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+          console.error('Auth error:', e);
+          showPage('user-auth');
+          errorEl.textContent = 'Error loading event. Please try again.';
+          errorEl.style.display = 'block';
+        }
+      }
+
+      // Court Management
+      function addCourt() {
+        const input = document.getElementById('court-input');
+        const courtName = input.value.trim();
+        
+        if (courtName && !courts.includes(courtName)) {
+          courts.push(courtName);
+          renderCourts();
+          input.value = '';
+        }
+      }
+
+      function removeCourt(index) {
+        courts.splice(index, 1);
+        renderCourts();
+      }
+
+      function renderCourts() {
+        const container = document.getElementById('courts-list');
+        container.innerHTML = courts.map((court, i) => `
+          <span class="court-tag">
+            ${court}
+            <button onclick="removeCourt(${i})">×</button>
+          </span>
+        `).join('');
+      }
+
+      // Create Event
+      async function createNewEvent() {
+        const errorEl = document.getElementById('create-event-error');
+        const successEl = document.getElementById('create-event-success');
+        
+        // Check if Firebase is ready
+        if (!db) {
+          errorEl.textContent = 'Firebase is still loading. Please wait a moment and try again.';
+          errorEl.style.display = 'block';
+          return;
+        }
+        
+        const eventDate = document.getElementById('event-date').value;
+        const fromTime = document.getElementById('from-time').value;
+        const toTime = document.getElementById('to-time').value;
+        const maxPlayers = parseInt(document.getElementById('max-players').value);
+        
+        console.log('Creating event:', { eventDate, fromTime, toTime, courts, maxPlayers });
+        
+        if (!eventDate) {
+          errorEl.textContent = 'Please select a date.';
+          errorEl.style.display = 'block';
+          return;
+        }
+        
+        if (courts.length === 0) {
+          errorEl.textContent = 'Please add at least one court.';
+          errorEl.style.display = 'block';
+          return;
+        }
+        
+        try {
+          const eventData = {
+            date: eventDate,
+            fromTime: fromTime,
+            toTime: toTime,
+            courts: courts,
+            maxPlayers: maxPlayers,
+            roster: [],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          
+          console.log('Saving to Firestore:', eventData);
+          const docRef = await db.collection('events').add(eventData);
+          console.log('Event created with ID:', docRef.id);
+          
+          // Generate shareable link
+          const eventLink = `${window.location.origin}${window.location.pathname}?event=${docRef.id}`;
+          document.getElementById('event-link').value = eventLink;
+          document.getElementById('event-link-box').style.display = 'block';
+          
+          errorEl.style.display = 'none';
+          successEl.textContent = 'Event created successfully! Share the link below with your team.';
+          successEl.style.display = 'block';
+          
+          // Reset form
+          courts = [];
+          renderCourts();
+          
+        } catch (e) {
+          console.error('Create event error:', e);
+          errorEl.textContent = 'Error creating event: ' + e.message;
+          errorEl.style.display = 'block';
+        }
+      }
+
+      // Copy Event Link
+      function copyEventLink() {
+        const linkInput = document.getElementById('event-link');
+        linkInput.select();
+        document.execCommand('copy');
+        alert('Link copied to clipboard!');
+      }
+
+      // Share to WhatsApp
+      function shareToWhatsApp() {
+        const link = document.getElementById('event-link').value;
+        const date = document.getElementById('event-date').value;
+        const fromTime = document.getElementById('from-time').value;
+        const toTime = document.getElementById('to-time').value;
+        
+        const message = `🎾 New Sports Event!\n\n📅 Date: ${formatDate(date)}\n⏰ Time: ${fromTime} - ${toTime}\n🏸 Courts: ${courts.join(', ')}\n\n🔗 Join here: ${link}`;
+        
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+      }
+
+      // Load Roster Page
+      function loadRosterPage(eventData) {
+        // Display event info
+        document.getElementById('roster-date').textContent = formatDate(eventData.date);
+        document.getElementById('roster-time').textContent = `${eventData.fromTime} - ${eventData.toTime}`;
+        document.getElementById('roster-courts').textContent = eventData.courts.join(', ');
+        
+        updateSlotsDisplay(eventData.roster?.length || 0, eventData.maxPlayers);
+        
+        showPage('roster-page');
+        
+        // Set up real-time listener
+        if (unsubscribeRoster) {
+          unsubscribeRoster();
+        }
+        
+        unsubscribeRoster = db.collection('events').doc(currentEventId)
+          .onSnapshot((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              renderRoster(data.roster || [], data.maxPlayers);
+            }
+          });
+      }
+
+      // Update Slots Display
+      function updateSlotsDisplay(current, max) {
+        const slotsEl = document.getElementById('roster-slots');
+        const remaining = max - current;
+        slotsEl.textContent = `${current}/${max} (${remaining} spots left)`;
+        slotsEl.className = 'slots' + (remaining <= 0 ? ' full' : '');
+      }
+
+      // Render Roster
+      function renderRoster(roster, maxPlayers) {
+        const listEl = document.getElementById('roster-list');
+        
+        if (roster.length === 0) {
+          listEl.innerHTML = '<li class="roster-item" style="justify-content: center; color: #999;">No players yet. Be the first to join!</li>';
+        } else {
+          listEl.innerHTML = roster.map((player, i) => `
+            <li class="roster-item">
+              <span class="number">${i + 1}</span>
+              <span class="name">${escapeHtml(player.name)}</span>
+              <div class="actions">
+                <button class="edit-btn" onclick="openEditModal('${player.id}', '${escapeHtml(player.name)}')" title="Edit">✏️</button>
+                <button class="delete-btn" onclick="removePlayer('${player.id}')" title="Remove">🗑️</button>
+              </div>
+            </li>
+          `).join('');
+        }
+        
+        updateSlotsDisplay(roster.length, maxPlayers);
+      }
+
+      // Add Player
+      async function addPlayer() {
+        const nameInput = document.getElementById('player-name');
+        const name = nameInput.value.trim();
+        const errorEl = document.getElementById('roster-error');
+        const successEl = document.getElementById('roster-success');
+        
+        if (!name) {
+          errorEl.textContent = 'Please enter your name.';
+          errorEl.style.display = 'block';
+          return;
+        }
+        
+        try {
+          const eventRef = db.collection('events').doc(currentEventId);
+          const eventDoc = await eventRef.get();
+          const eventData = eventDoc.data();
+          
+          if (eventData.roster.length >= eventData.maxPlayers) {
+            errorEl.textContent = 'Sorry, the roster is full!';
+            errorEl.style.display = 'block';
+            return;
+          }
+          
+          const newPlayer = {
+            id: generateId(),
+            name: name,
+            joinedAt: new Date().toISOString()
+          };
+          
+          await eventRef.update({
+            roster: firebase.firestore.FieldValue.arrayUnion(newPlayer)
+          });
+          
+          nameInput.value = '';
+          errorEl.style.display = 'none';
+          successEl.textContent = `${name} has been added to the roster!`;
+          successEl.style.display = 'block';
+          setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+          
+          // Send automatic notification
+          await sendAutoNotification('joined', name);
+          
+        } catch (e) {
+          console.error('Add player error:', e);
+          errorEl.textContent = 'Error adding player. Please try again.';
+          errorEl.style.display = 'block';
+        }
+      }
+
+      // Remove Player
+      async function removePlayer(playerId) {
+        if (!confirm('Are you sure you want to remove this player?')) return;
+        
+        try {
+          const eventRef = db.collection('events').doc(currentEventId);
+          const eventDoc = await eventRef.get();
+          const eventData = eventDoc.data();
+          
+          const removedPlayer = eventData.roster.find(p => p.id === playerId);
+          const updatedRoster = eventData.roster.filter(p => p.id !== playerId);
+          
+          await eventRef.update({ roster: updatedRoster });
+          
+          // Send automatic notification
+          if (removedPlayer) {
+            await sendAutoNotification('left', removedPlayer.name);
+          }
+          
+        } catch (e) {
+          console.error('Remove player error:', e);
+          alert('Error removing player. Please try again.');
+        }
+      }
+
+      // Edit Modal
+      function openEditModal(playerId, currentName) {
+        document.getElementById('edit-player-id').value = playerId;
+        document.getElementById('edit-name-input').value = currentName;
+        document.getElementById('edit-modal').classList.add('active');
+      }
+
+      function closeEditModal() {
+        document.getElementById('edit-modal').classList.remove('active');
+      }
+
+      async function saveEditedName() {
+        const playerId = document.getElementById('edit-player-id').value;
+        const newName = document.getElementById('edit-name-input').value.trim();
+        
+        if (!newName) {
+          alert('Please enter a name.');
+          return;
+        }
+        
+        try {
+          const eventRef = db.collection('events').doc(currentEventId);
+          const eventDoc = await eventRef.get();
+          const eventData = eventDoc.data();
+          
+          const updatedRoster = eventData.roster.map(p => {
+            if (p.id === playerId) {
+              return { ...p, name: newName };
+            }
+            return p;
+          });
+          
+          await eventRef.update({ roster: updatedRoster });
+          closeEditModal();
+          
+          // Send automatic notification
+          await sendAutoNotification('updated', newName);
+          
+        } catch (e) {
+          console.error('Edit player error:', e);
+          alert('Error updating name. Please try again.');
+        }
+      }
+
+      // Auto-notification function
+      async function sendAutoNotification(action, playerName) {
+        try {
+          const eventDoc = await db.collection('events').doc(currentEventId).get();
+          const eventData = eventDoc.data();
+          const remaining = eventData.maxPlayers - eventData.roster.length;
+          
+          // Prepare roster message
+          const rosterText = eventData.roster.length > 0
+            ? eventData.roster.map((p, i) => `${i + 1}. ${p.name}`).join('\n')
+            : 'No players yet';
+          
+          const actionEmoji = action === 'joined' ? '✅' : action === 'left' ? '❌' : '✏️';
+          const actionText = action === 'joined' ? 'joined' : action === 'left' ? 'left' : 'updated name in';
+          
+          const message = `${actionEmoji} ${playerName} ${actionText} the roster!\n\n📅 ${formatDate(eventData.date)}\n⏰ ${eventData.fromTime} - ${eventData.toTime}\n\n👥 Roster (${eventData.roster.length}/${eventData.maxPlayers}):\n${rosterText}\n\n${remaining > 0 ? `✨ ${remaining} spots left!` : '🚫 FULL!'}`;
+          
+          // Send to webhook (Make.com) - no popup needed
+          if (CONFIG.WEBHOOK_URL) {
+            await sendWebhook(eventData, action, playerName, message);
+          }
+        } catch (e) {
+          console.error('Auto-notification error:', e);
+        }
+      }
+      
+      // Send webhook notification
+      async function sendWebhook(eventData, action, playerName, message) {
+        try {
+          const payload = {
+            message: message,
+            action: action,
+            playerName: playerName,
+            rosterCount: eventData.roster.length,
+            maxPlayers: eventData.maxPlayers
+          };
+          
+          await fetch(CONFIG.WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          
+          console.log('Webhook sent with message:', message);
+        } catch (e) {
+          console.error('Webhook error:', e);
+        }
+      }
+
+      // Notify WhatsApp with Roster (manual)
+      async function notifyWhatsApp() {
+        try {
+          const eventDoc = await db.collection('events').doc(currentEventId).get();
+          const eventData = eventDoc.data();
+          
+          const rosterText = eventData.roster.length > 0
+            ? eventData.roster.map((p, i) => `${i + 1}. ${p.name}`).join('\n')
+            : 'No players yet';
+          
+          const remaining = eventData.maxPlayers - eventData.roster.length;
+          
+          const message = `🎾 Roster Update!\n\n📅 ${formatDate(eventData.date)}\n⏰ ${eventData.fromTime} - ${eventData.toTime}\n🏸 ${eventData.courts.join(', ')}\n\n👥 Current Roster (${eventData.roster.length}/${eventData.maxPlayers}):\n${rosterText}\n\n${remaining > 0 ? `✨ ${remaining} spots remaining!` : '🚫 Roster is FULL!'}\n\n🔗 Join: ${window.location.origin}${window.location.pathname}?event=${currentEventId}`;
+          
+          const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+          window.open(whatsappUrl, '_blank');
+          
+        } catch (e) {
+          console.error('WhatsApp share error:', e);
+          alert('Error preparing WhatsApp message. Please try again.');
+        }
+      }
+
+      // Utility Functions
+      function generateId() {
+        return Math.random().toString(36).substring(2, 15);
+      }
+
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Allow Enter key to submit
+      document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          const activeEl = document.activeElement;
+          if (activeEl.id === 'creator-password') authenticateCreator();
+          else if (activeEl.id === 'user-password') authenticateUser();
+          else if (activeEl.id === 'court-input') addCourt();
+          else if (activeEl.id === 'player-name') addPlayer();
+          else if (activeEl.id === 'edit-name-input') saveEditedName();
         }
       });
     </script>

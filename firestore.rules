@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Events collection - allow read/write for authenticated access
+    // Note: Using simple password auth on client side, so we allow access here
+    // For production, consider using Firebase Authentication
+    match /events/{eventId} {
+      allow read, write: if true;
+    }
+  }
+}
